@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Cloud Assignment 8 - Firebase Auth</title>
+
+  <!-- Firebase v8 SDK -->
+  <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-auth.js"></script>
+</head>
+
+<body>
+
+  <h2>Cloud Assignment 8 - Firebase Authentication</h2>
+
+  <div>
+    <input type="email" id="email" placeholder="Enter Email" required>
+    <br><br>
+    <input type="password" id="password" placeholder="Enter Password" required>
+    <br><br>
+    <button id="registerBtn">Register</button>
+    <button id="loginBtn">Login</button>
+  </div>
+
+  <script>
+    // @ts-nocheck
+    /* global firebase */
+
+    // Firebase Configuration
+    const firebaseConfig = {
+      apiKey: "AIzaSyBJ8uCRhIn_DXVg5q6mZ_IdeS4hxOG2U-4",
+      authDomain: "cloud-assignment-8.firebaseapp.com",
+      projectId: "cloud-assignment-8"
+    };
+
+    // Initialize Firebase
+    firebase.initializeApp(firebaseConfig);
+
+    // DOM Elements
+    const emailInput = document.getElementById("email");
+    const passwordInput = document.getElementById("password");
+    const registerBtn = document.getElementById("registerBtn");
+    const loginBtn = document.getElementById("loginBtn");
+
+    // Register Function
+    registerBtn.addEventListener("click", async () => {
+      const email = emailInput.value;
+      const password = passwordInput.value;
+
+      try {
+        await firebase.auth().createUserWithEmailAndPassword(email, password);
+        alert("User Registered Successfully!");
+      } catch (error) {
+        alert(error.message);
+      }
+    });
+
+    // Login Function
+    loginBtn.addEventListener("click", async () => {
+      const email = emailInput.value;
+      const password = passwordInput.value;
+
+      try {
+        const userCredential = await firebase.auth().signInWithEmailAndPassword(email, password);
+        const idToken = await userCredential.user.getIdToken();
+
+        const response = await fetch("http://127.0.0.1:5000/verify", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ token: idToken })
+        });
+
+        const data = await response.json();
+        alert(JSON.stringify(data, null, 2));
+
+      } catch (error) {
+        alert(error.message);
+      }
+    });
+
+  </script>
+
+</body>
+</html>
