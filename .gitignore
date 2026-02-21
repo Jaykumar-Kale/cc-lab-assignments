@@ -72,3 +72,5 @@ instance/
 # Google App Engine (local files)
 # ----------------------------
 appengine_config.py
+
+# ----------------------------
